@@ -1,13 +1,6 @@
 <template>
   <div class="index-container">
-    <header class="hero-section">
-      <div class="logo-placeholder">e-Commerce app</div>
-      <h1>Sua próxima grande descoberta está aqui.</h1>
-      <p>
-        Acesse sua conta para acompanhar seus pedidos, salvar favoritos e garantir ofertas
-        exclusivas.
-      </p>
-    </header>
+    <div class="logo-placeholder">e-Commerce app</div>
 
     <main class="auth-actions">
       <div class="actions-card">
