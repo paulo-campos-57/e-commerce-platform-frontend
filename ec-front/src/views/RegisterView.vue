@@ -49,6 +49,41 @@
           required
         />
       </div>
+
+      <div class="form-group checkbox-group">
+        <label for="isAdmin" class="checkbox-label">
+          <input
+            v-model="formData.isAdmin"
+            type="checkbox"
+            id="isAdmin"
+            @change="handleAdminChange"
+          />
+          Quero me cadastrar como Administrador
+        </label>
+      </div>
+
+      <div class="form-group" :class="{ 'disabled-field': formData.isAdmin }">
+        <label for="preferences">Preferências de Compra</label>
+        <select
+          v-model="formData.preferences"
+          id="preferences"
+          multiple
+          :disabled="formData.isAdmin"
+          class="select-multiple"
+        >
+          <option value="tecnologia">Tecnologia</option>
+          <option value="moda">Moda</option>
+          <option value="casa">Casa & Decoração</option>
+          <option value="games">Games</option>
+        </select>
+        <small class="help-text" v-if="!formData.isAdmin">
+          Segure Ctrl (ou Cmd) para selecionar mais de uma opção.
+        </small>
+        <small class="help-text error" v-else>
+          Administradores não possuem preferências de perfil.
+        </small>
+      </div>
+
       <button type="submit" class="register-button" :disabled="isLoading">
         <span v-if="!isLoading">Criar Conta</span>
         <span v-else>Cadastrando...</span>
@@ -72,7 +107,15 @@ const formData = reactive({
   email: "",
   password: "",
   confirmPassword: "",
+  isAdmin: false,
+  preferences: [],
 });
+
+const handleAdminChange = () => {
+  if (formData.isAdmin) {
+    formData.preferences = [];
+  }
+};
 
 const handleRegister = async () => {
   if (formData.password !== formData.confirmPassword) {
@@ -82,12 +125,21 @@ const handleRegister = async () => {
 
   isLoading.value = true;
 
+  const payload = {
+    name: formData.name,
+    email: formData.email,
+    password: formData.password,
+  };
+
+  if (formData.isAdmin) {
+    payload.role = "admin";
+  } else {
+    payload.role = "user";
+    payload.preferences = formData.preferences;
+  }
+
   try {
-    const data = await userService.register({
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
-    });
+    const data = await userService.register(payload);
 
     toast.success(data.message || "Registro efetuado com sucesso!");
     router.push("/login");

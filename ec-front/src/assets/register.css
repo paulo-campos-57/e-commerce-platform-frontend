@@ -55,3 +55,46 @@
 .register-button:hover {
     background-color: #4338ca;
 }
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    margin: 15px 0;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.select-multiple {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    min-height: 80px;
+}
+
+.select-multiple:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.disabled-field label {
+    color: #6c757d;
+}
+
+.help-text {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 4px;
+    display: block;
+}
+
+.help-text.error {
+    color: #dc3545;
+}
