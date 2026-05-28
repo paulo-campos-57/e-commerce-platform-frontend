@@ -78,14 +78,21 @@ const handleLogin = async () => {
   try {
     const data = await userService.login(formData);
 
-    localStorage.setItem("token", data.access_token);
-    localStorage.setItem("user", JSON.stringify(data.user));
+    const token = data.user?.access_token;
+    const userObj = data.user?.user;
+
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(userObj));
 
     console.log("Nest answer:", data);
 
     toast.success(data.message || "Login efetuado com sucesso!");
 
-    router.push("/home");
+    if (userObj?.role === "admin") {
+      router.push("/homeAdmin");
+    } else {
+      router.push("/home");
+    }
   } catch (error) {
     console.error("Erro na requisição:", error);
 

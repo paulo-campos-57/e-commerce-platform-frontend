@@ -34,5 +34,10 @@ export const userService = {
     async delete(id) {
         const response = await api.delete(`/users/delete/${id}`);
         return response.data;
+    },
+
+    async checkAdmin() {
+        const response = await api.get("/users/check-admin");
+        return response.data;
     }
 }
