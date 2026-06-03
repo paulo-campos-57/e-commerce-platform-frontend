@@ -184,6 +184,7 @@ onMounted(() => {
 .header-title h1 {
   font-size: 2.25rem;
   background: linear-gradient(135deg, var(--color-primary), #a855f7);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 0.25rem;

@@ -39,5 +39,10 @@ export const userService = {
     async checkAdmin() {
         const response = await api.get("/users/check-admin");
         return response.data;
+    },
+
+    async updateMe(userData) {
+        const response = await api.patch("/users/update-me", userData);
+        return response.data;
     }
 }
