@@ -81,7 +81,6 @@
         </div>
       </section>
 
-      <!-- Recommendations Coming Soon Card -->
       <section class="dashboard-card recommendations-card animate-slide-up" style="animation-delay: 0.2s">
         <div class="card-header">
           <span class="card-icon">✨</span>
@@ -92,15 +91,8 @@
         </div>
 
         <div class="card-body recommendations-body">
-          <!-- Coming Soon Overlay -->
-          <div class="coming-soon-banner">
-            <div class="coming-soon-badge">EM BREVE</div>
-            <h3>Recomendações Inteligentes</h3>
-            <p>Estamos refinando nosso motor de IA para criar recomendações perfeitas para você. As ofertas aparecerão aqui assim que as preferências forem processadas!</p>
-          </div>
-
-          <!-- Product Recommendation Skeletons -->
-          <div class="skeletons-container">
+          
+          <div v-if="isLoadingRecommendations" class="skeletons-container">
             <div v-for="n in 3" :key="n" class="skeleton-card">
               <div class="skeleton-image-wrapper">
                 <div class="skeleton-image shimmer"></div>
@@ -115,6 +107,24 @@
               </div>
             </div>
           </div>
+
+          <div v-else-if="recommendations.length === 0" class="coming-soon-banner">
+            <div class="coming-soon-badge">Aviso</div>
+            <h3>Nenhuma recomendação no momento</h3>
+            <p>Escolha e salve novas preferências de categorias acima para forçar o motor de recomendação a gerar ofertas para o seu perfil.</p>
+          </div>
+
+          <div v-else class="products-container">
+            <div v-for="prodId in recommendations" :key="prodId" class="product-item-card">
+              <div class="product-avatar-box">📦</div>
+              <div class="product-details">
+                <h4>Item Recomendado</h4>
+                <span class="product-id-tag">ID: {{ prodId }}</span>
+              </div>
+              <button class="btn-view-product" @click="goToProduct(prodId)">Ver Oferta</button>
+            </div>
+          </div>
+
         </div>
       </section>
     </div>
@@ -124,6 +134,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { userService } from "@/services/userService";
+import { recommendationService } from "@/services/recommendationService"; // <-- Importado o novo serviço
 import { useToast } from "vue-toastification";
 
 const toast = useToast();
@@ -131,6 +142,10 @@ const toast = useToast();
 const userName = ref("");
 const userId = ref("");
 const isSaving = ref(false);
+
+// Recommendations states
+const recommendations = ref([]);
+const isLoadingRecommendations = ref(true);
 
 // Preferences states
 const selectedCategories = ref([]);
@@ -156,7 +171,22 @@ const toggleCategory = (catId) => {
   }
 };
 
-const loadUserData = () => {
+// Nova função assíncrona para buscar as recomendações do back-end
+const fetchRecommendations = async () => {
+  if (!userId.value) return;
+  
+  isLoadingRecommendations.value = true;
+  try {
+    const data = await recommendationService.getMyRecommendations(userId.value);
+    recommendations.value = data;
+  } catch (error) {
+    console.error("Falha ao buscar recomendações da IA:", error);
+  } finally {
+    isLoadingRecommendations.value = false;
+  }
+};
+
+const loadUserData = async () => {
   const storedUser = localStorage.getItem("user");
   if (storedUser) {
     try {
@@ -164,17 +194,11 @@ const loadUserData = () => {
       userId.value = userObj.id || "";
       userName.value = userObj.name || "Cliente";
       
-      // Load user preferences if available
-      // The preferences field in the database is simple-array: string[]
-      // We store categories as array elements.
-      // Other preference flags can be stored inside preferences array or locally.
-      // Let's parse user preferences from the array.
       if (userObj.preferences && Array.isArray(userObj.preferences)) {
         selectedCategories.value = userObj.preferences.filter(pref => 
           availableCategories.some(cat => cat.id === pref)
         );
         
-        // Check if preferences simple-array contains toggles/payment preferences encoded or mock them
         receivePromoEmails.value = !userObj.preferences.includes("optout_newsletter");
         
         const paymentPref = userObj.preferences.find(p => p.startsWith("pay_"));
@@ -182,16 +206,22 @@ const loadUserData = () => {
           preferredPayment.value = paymentPref.replace("pay_", "");
         }
       }
+
+      // IMPORTANTE: Busca as recomendações da IA logo após identificar o ID do usuário logado
+      await fetchRecommendations();
+
     } catch (error) {
       console.error("Erro ao carregar dados do usuário:", error);
+      isLoadingRecommendations.value = false;
     }
+  } else {
+    isLoadingRecommendations.value = false;
   }
 };
 
 const savePreferences = async () => {
   isSaving.value = true;
   try {
-    // Construct the simple-array of preferences for the backend database
     const prefArray = [...selectedCategories.value];
     
     if (!receivePromoEmails.value) {
@@ -207,9 +237,11 @@ const savePreferences = async () => {
     });
 
     if (response.user) {
-      // Save the updated user object back into local storage
       localStorage.setItem("user", JSON.stringify(response.user));
       toast.success("Suas preferências foram salvas com sucesso!");
+      
+      // Atualiza as recomendações em tempo real após o usuário mudar os gostos
+      await fetchRecommendations();
     } else {
       toast.success("Preferências salvas localmente!");
     }
@@ -219,6 +251,11 @@ const savePreferences = async () => {
   } finally {
     isSaving.value = false;
   }
+};
+
+const goToProduct = (prodId) => {
+  toast.info(`Navegando para o produto: ${prodId}`);
+  // Aqui você colocaria a navegação do vue-router (ex: router.push(`/product/${prodId}`))
 };
 
 onMounted(() => {
@@ -764,5 +801,76 @@ input:checked + .slider:before {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* CSS Adicional para renderizar os produtos reais da IA de forma elegante */
+.products-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.product-item-card {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.product-item-card:hover {
+  transform: translateX(4px);
+  border-color: var(--color-primary);
+}
+
+.product-avatar-box {
+  width: 50px;
+  height: 50px;
+  background-color: var(--color-background-mute);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.product-details {
+  flex-grow: 1;
+}
+
+.product-details h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-heading);
+  margin-bottom: 0.15rem;
+}
+
+.product-id-tag {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-family: monospace;
+  background-color: var(--color-background-mute);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+}
+
+.btn-view-product {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-view-product:hover {
+  background-color: var(--color-primary);
+  color: white;
 }
 </style>

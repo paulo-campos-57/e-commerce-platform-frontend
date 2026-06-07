@@ -49,6 +49,17 @@
           required
         />
       </div>
+      <div class="form-group">
+        <label for="state">Estado</label>
+        <input
+          v-model="formData.state"
+          type="text"
+          id="state"
+          name="state"
+          placeholder="Digite seu estado"
+          required
+        />
+      </div>
 
       <div class="form-group checkbox-group">
         <label for="isAdmin" class="checkbox-label">
@@ -129,6 +140,7 @@ const handleRegister = async () => {
     name: formData.name,
     email: formData.email,
     password: formData.password,
+    state: formData.state,
   };
 
   if (formData.isAdmin) {
