@@ -1,49 +1,45 @@
 <div align="center">
   <h1>
-    <img src="https://skillicons.dev/icons?i=typescript,nestjs,sqlite" /><br>
-    Back-End — E-Commerce Platform 🇺🇸
+    <img src="https://skillicons.dev/icons?i=vue,vite,javascript" /><br>
+    Front-End — E-Commerce Platform 🇺🇸
   </h1>
   <p>
-    <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat&logo=typescript&logoColor=white" />
-    <img src="https://img.shields.io/badge/NestJS-10.x-E0234E?style=flat&logo=nestjs&logoColor=white" />
-    <img src="https://img.shields.io/badge/SQLite-3.x-003B57?style=flat&logo=sqlite&logoColor=white" />
-    <img src="https://img.shields.io/badge/ESLint-enabled-4B32C3?style=flat&logo=eslint&logoColor=white" />
-    <img src="https://img.shields.io/badge/Prettier-enabled-F7B93E?style=flat&logo=prettier&logoColor=black" />
-    <img src="https://img.shields.io/badge/Jest-enabled-C21325?style=flat&logo=jest&logoColor=white" />
+    <img src="https://img.shields.io/badge/Vue.js-3.x-4FC08D?style=flat&logo=vuedotjs&logoColor=white" />
+    <img src="https://img.shields.io/badge/Vite-5.x-646CFF?style=flat&logo=vite&logoColor=white" />
+    <img src="https://img.shields.io/badge/JavaScript-ES2022-F7DF1E?style=flat&logo=javascript&logoColor=black" />
+    <img src="https://img.shields.io/badge/Vue_Router-4.x-4FC08D?style=flat&logo=vuedotjs&logoColor=white" />
   </p>
 </div>
 
-This repository contains the Back-End of <a href="https://github.com/paulo-campos-57" target="_blank">Paulo Campos</a>'s E-Commerce Platform project.<br>
-The front-end repository can be found at this <a href="https://github.com/paulo-campos-57/e-commerce-platform-frontend/tree/development" target="_blank">link</a>.
+This repository contains the Front-End of <a href="https://github.com/paulo-campos-57" target="_blank">Paulo Campos</a>'s E-Commerce Platform project.<br>
+The back-end repository can be found at this <a href="https://github.com/paulo-campos-57/e-commerce-platform-backend/tree/development" target="_blank">link</a>.
 
 ---
 
 ## Project Structure
 
 ```
-e-commerce-platform-backend/
-├── src/
-│   ├── common/               # Shared utilities, guards, pipes, interceptors
-│   ├── modules/              # Feature modules
-│   │   ├── auth/             # Authentication & authorisation (JWT)
-│   │   ├── recommendation/   # Product recommendation logic
-│   │   └── user/             # User management
-│   ├── app.controller.spec.ts # Root controller unit tests
-│   ├── app.controller.ts     # Root controller
-│   ├── app.module.ts         # Root application module
-│   ├── app.service.ts        # Root service
-│   └── main.ts               # Application entry point (bootstrap)
+e-commerce-platform-frontend/
+├── ec-front/
+│   ├── public/               # Static assets served directly
+│   ├── src/
+│   │   ├── assets/           # Images, fonts, and global styles
+│   │   ├── components/       # Reusable Vue components
+│   │   ├── router/           # Vue Router configuration & route definitions
+│   │   ├── services/         # API service layer (HTTP calls to the back-end)
+│   │   ├── views/            # Page-level components (one per route)
+│   │   ├── App.vue           # Root component
+│   │   └── main.js           # Application entry point
+│   ├── .gitignore
+│   ├── index.html            # HTML entry point
+│   ├── jsconfig.json         # JavaScript/IDE path aliases configuration
+│   ├── package.json          # Dependencies & scripts
+│   ├── package-lock.json     # Lockfile
+│   ├── README.md
+│   └── vite.config.js        # Vite configuration
 │
-├── test/                     # End-to-end tests
-├── ec-platform.db            # SQLite database file
 ├── .env                      # Environment variables
-├── .eslintrc / eslint.config.mjs  # ESLint configuration
-├── .prettierrc               # Prettier configuration
-├── nest-cli.json             # NestJS CLI configuration
-├── package.json              # Dependencies & scripts
-├── package-lock.json         # Lockfile
-├── tsconfig.json             # TypeScript configuration
-├── tsconfig.build.json       # TypeScript build configuration
+├── .gitignore
 ├── LICENSE
 └── README.md
 ```
@@ -54,14 +50,11 @@ e-commerce-platform-backend/
 
 | Technology | Version | Purpose |
 |---|---|---|
-| [TypeScript](https://www.typescriptlang.org/) | 5.x | Primary language |
-| [NestJS](https://nestjs.com/) | 10.x | Web framework |
-| [SQLite](https://www.sqlite.org/) | 3.x | Relational database |
-| [TypeORM](https://typeorm.io/) | — | ORM |
-| [JWT / Passport](https://docs.nestjs.com/security/authentication) | — | Authentication |
-| [ESLint](https://eslint.org/) | — | Linter |
-| [Prettier](https://prettier.io/) | — | Code formatter |
-| [Jest](https://jestjs.io/) | — | Unit & e2e testing |
+| [Vue.js](https://vuejs.org/) | 3.x | Progressive UI framework |
+| [Vite](https://vitejs.dev/) | 5.x | Build tool & dev server |
+| [Vue Router](https://router.vuejs.org/) | 4.x | Client-side routing |
+| [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript) | ES2022 | Primary language |
+| [Axios](https://axios-http.com/) | — | HTTP client for API requests |
 
 ---
 
@@ -70,19 +63,21 @@ e-commerce-platform-backend/
 - **Node.js** 20.x or higher
 - **npm** 10.x or higher
 
+> Make sure the back-end is running before starting the front-end.
+
 ---
 
 ## Environment Variables
 
-Create a `.env` file at the root of the project and fill in your values:
+Create a `.env` file at the root of `ec-front/` and fill in your values:
 
 ```env
-# Bycript for salt
-BCRYPT_SALT_ROUNDS=number_of_salt_rounds
-# JWT
-# Generate a secure key with: node -e "require('crypto').randomBytes(32).toString('hex').then(console.log)"
-JWT_SECRET=your_secret_key_here
+# Back-end API base URLs
+VITE_BACKEND_API_URL=http://localhost:3000
+PYTHON_API_URL=http://localhost:8000
 ```
+
+> All environment variables exposed to the client must be prefixed with `VITE_`.
 
 ---
 
@@ -99,6 +94,7 @@ git checkout development
 ### 📦 2. Install dependencies
 
 ```bash
+cd ec-front
 npm install
 ```
 
@@ -112,10 +108,10 @@ cp .env.example .env
 ### ▶️ 4. Start the development server
 
 ```bash
-npm run start:dev
+npm run dev
 ```
 
-The API will be available at **http://localhost:3000**.
+The application will be available at **http://localhost:5173**.
 
 ---
 
@@ -123,47 +119,21 @@ The API will be available at **http://localhost:3000**.
 
 | Command | Description |
 |---|---|
-| `npm run start` | Start the application |
-| `npm run start:dev` | Start in watch mode (development) |
-| `npm run start:prod` | Start compiled build (production) |
-| `npm run build` | Compile TypeScript to `dist/` |
-| `npm run lint` | Run ESLint |
-| `npm run format` | Format source files with Prettier |
-| `npm run test` | Run unit tests |
-| `npm run test:watch` | Run unit tests in watch mode |
-| `npm run test:cov` | Run unit tests with coverage report |
-| `npm run test:e2e` | Run end-to-end tests |
+| `npm run dev` | Start the development server with hot-reload |
+| `npm run build` | Build the application for production into `dist/` |
+| `npm run preview` | Locally preview the production build |
 
 ---
 
-## Running Tests
+## Application Overview
 
-```bash
-# Run all unit tests
-npm run test
-
-# Run with verbose output
-npm run test -- --verbose
-
-# Run a specific test file
-npm run test -- app.controller.spec.ts
-
-# Run with coverage
-npm run test:cov
-
-# Run end-to-end tests
-npm run test:e2e
-```
-
----
-
-## API Overview
-
-| Prefix | Description |
+| Directory | Description |
 |---|---|
-| `/auth` | Registration, login, and JWT token management |
-| `/users` | User profile and account management |
-| `/recommendations` | Product recommendation retrieval and logic |
+| `components/` | Reusable UI elements (buttons, cards, modals, etc.) |
+| `views/` | Full-page components mapped to routes |
+| `router/` | Route definitions and navigation guards |
+| `services/` | Abstraction layer for all API communication with the back-end |
+| `assets/` | Static resources such as images, icons, and global stylesheets |
 
 ---
 
@@ -173,50 +143,46 @@ npm run test:e2e
 
 <div align="center">
   <h1>
-    <img src="https://skillicons.dev/icons?i=typescript,nestjs,sqlite" /><br>
-    Back-End — E-Commerce Platform 🇧🇷
+    <img src="https://skillicons.dev/icons?i=vue,vite,javascript" /><br>
+    Front-End — E-Commerce Platform 🇧🇷
   </h1>
   <p>
-    <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat&logo=typescript&logoColor=white" />
-    <img src="https://img.shields.io/badge/NestJS-10.x-E0234E?style=flat&logo=nestjs&logoColor=white" />
-    <img src="https://img.shields.io/badge/SQLite-3.x-003B57?style=flat&logo=sqlite&logoColor=white" />
-    <img src="https://img.shields.io/badge/ESLint-enabled-4B32C3?style=flat&logo=eslint&logoColor=white" />
-    <img src="https://img.shields.io/badge/Prettier-enabled-F7B93E?style=flat&logo=prettier&logoColor=black" />
-    <img src="https://img.shields.io/badge/Jest-enabled-C21325?style=flat&logo=jest&logoColor=white" />
+    <img src="https://img.shields.io/badge/Vue.js-3.x-4FC08D?style=flat&logo=vuedotjs&logoColor=white" />
+    <img src="https://img.shields.io/badge/Vite-5.x-646CFF?style=flat&logo=vite&logoColor=white" />
+    <img src="https://img.shields.io/badge/JavaScript-ES2022-F7DF1E?style=flat&logo=javascript&logoColor=black" />
+    <img src="https://img.shields.io/badge/Vue_Router-4.x-4FC08D?style=flat&logo=vuedotjs&logoColor=white" />
   </p>
 </div>
 
-Este repositório contém o Back-End do projeto E-Commerce Platform de <a href="https://github.com/paulo-campos-57" target="_blank">Paulo Campos</a>.<br>
-O repositório do front-end pode ser encontrado neste <a href="https://github.com/paulo-campos-57/e-commerce-platform-frontend/tree/development" target="_blank">link</a>.
+Este repositório contém o Front-End do projeto E-Commerce Platform de <a href="https://github.com/paulo-campos-57" target="_blank">Paulo Campos</a>.<br>
+O repositório do back-end pode ser encontrado neste <a href="https://github.com/paulo-campos-57/e-commerce-platform-backend/tree/development" target="_blank">link</a>.
 
 ---
 
 ## Estrutura do Projeto
 
 ```
-e-commerce-platform-backend/
-├── src/
-│   ├── common/               # Utilitários, guards, pipes e interceptors compartilhados
-│   ├── modules/              # Módulos de funcionalidades
-│   │   ├── auth/             # Autenticação e autorização (JWT)
-│   │   ├── recommendation/   # Lógica de recomendação de produtos
-│   │   └── user/             # Gerenciamento de usuários
-│   ├── app.controller.spec.ts # Testes unitários do controller raiz
-│   ├── app.controller.ts     # Controller raiz
-│   ├── app.module.ts         # Módulo raiz da aplicação
-│   ├── app.service.ts        # Service raiz
-│   └── main.ts               # Ponto de entrada da aplicação (bootstrap)
+e-commerce-platform-frontend/
+├── ec-front/
+│   ├── public/               # Assets estáticos servidos diretamente
+│   ├── src/
+│   │   ├── assets/           # Imagens, fontes e estilos globais
+│   │   ├── components/       # Componentes Vue reutilizáveis
+│   │   ├── router/           # Configuração do Vue Router e definição de rotas
+│   │   ├── services/         # Camada de serviços de API (chamadas HTTP ao back-end)
+│   │   ├── views/            # Componentes de página (um por rota)
+│   │   ├── App.vue           # Componente raiz
+│   │   └── main.js           # Ponto de entrada da aplicação
+│   ├── .gitignore
+│   ├── index.html            # Ponto de entrada HTML
+│   ├── jsconfig.json         # Configuração de aliases JavaScript/IDE
+│   ├── package.json          # Dependências e scripts
+│   ├── package-lock.json     # Lockfile
+│   ├── README.md
+│   └── vite.config.js        # Configuração do Vite
 │
-├── test/                     # Testes end-to-end
-├── ec-platform.db            # Arquivo do banco de dados SQLite
 ├── .env                      # Variáveis de ambiente
-├── .eslintrc / eslint.config.mjs  # Configuração do ESLint
-├── .prettierrc               # Configuração do Prettier
-├── nest-cli.json             # Configuração do NestJS CLI
-├── package.json              # Dependências e scripts
-├── package-lock.json         # Lockfile
-├── tsconfig.json             # Configuração do TypeScript
-├── tsconfig.build.json       # Configuração de build do TypeScript
+├── .gitignore
 ├── LICENSE
 └── README.md
 ```
@@ -227,14 +193,11 @@ e-commerce-platform-backend/
 
 | Tecnologia | Versão | Finalidade |
 |---|---|---|
-| [TypeScript](https://www.typescriptlang.org/) | 5.x | Linguagem principal |
-| [NestJS](https://nestjs.com/) | 10.x | Framework web |
-| [SQLite](https://www.sqlite.org/) | 3.x | Banco de dados relacional |
-| [TypeORM](https://typeorm.io/) | — | ORM |
-| [JWT / Passport](https://docs.nestjs.com/security/authentication) | — | Autenticação |
-| [ESLint](https://eslint.org/) | — | Linter |
-| [Prettier](https://prettier.io/) | — | Formatador de código |
-| [Jest](https://jestjs.io/) | — | Testes unitários e e2e |
+| [Vue.js](https://vuejs.org/) | 3.x | Framework de UI progressivo |
+| [Vite](https://vitejs.dev/) | 5.x | Build tool e servidor de desenvolvimento |
+| [Vue Router](https://router.vuejs.org/) | 4.x | Roteamento client-side |
+| [JavaScript](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript) | ES2022 | Linguagem principal |
+| [Axios](https://axios-http.com/) | — | Cliente HTTP para requisições à API |
 
 ---
 
@@ -243,19 +206,21 @@ e-commerce-platform-backend/
 - **Node.js** 20.x ou superior
 - **npm** 10.x ou superior
 
+> Certifique-se de que o back-end esteja em execução antes de iniciar o front-end.
+
 ---
 
 ## Variáveis de Ambiente
 
-Crie um arquivo `.env` na raiz do projeto e preencha com suas credenciais:
+Crie um arquivo `.env` na raiz de `ec-front/` e preencha com suas credenciais:
 
 ```env
-# Bycript for salt
-BCRYPT_SALT_ROUNDS=numero_de_rodadas_de_salt
-# JWT
-# Gere uma chave segura com: node -e "require('crypto').randomBytes(32).toString('hex').then(console.log)"
-JWT_SECRET=sua_chave_secreta_aqui
+# URLs base da API do back-end
+VITE_BACKEND_API_URL=http://localhost:3000
+PYTHON_API_URL=http://localhost:8000
 ```
+
+> Todas as variáveis de ambiente expostas ao cliente devem ter o prefixo `VITE_`.
 
 ---
 
@@ -272,6 +237,7 @@ git checkout development
 ### 📦 2. Instale as dependências
 
 ```bash
+cd ec-front
 npm install
 ```
 
@@ -285,10 +251,10 @@ cp .env.example .env
 ### ▶️ 4. Suba o servidor de desenvolvimento
 
 ```bash
-npm run start:dev
+npm run dev
 ```
 
-A API estará disponível em **http://localhost:3000**.
+A aplicação estará disponível em **http://localhost:5173**.
 
 ---
 
@@ -296,44 +262,18 @@ A API estará disponível em **http://localhost:3000**.
 
 | Comando | Descrição |
 |---|---|
-| `npm run start` | Inicia a aplicação |
-| `npm run start:dev` | Inicia em modo watch (desenvolvimento) |
-| `npm run start:prod` | Inicia o build compilado (produção) |
-| `npm run build` | Compila o TypeScript para `dist/` |
-| `npm run lint` | Executa o ESLint |
-| `npm run format` | Formata os arquivos com Prettier |
-| `npm run test` | Executa os testes unitários |
-| `npm run test:watch` | Executa os testes em modo watch |
-| `npm run test:cov` | Executa os testes com relatório de cobertura |
-| `npm run test:e2e` | Executa os testes end-to-end |
+| `npm run dev` | Inicia o servidor de desenvolvimento com hot-reload |
+| `npm run build` | Gera o build de produção na pasta `dist/` |
+| `npm run preview` | Visualiza localmente o build de produção |
 
 ---
 
-## Rodando os Testes
+## Visão Geral da Aplicação
 
-```bash
-# Executar todos os testes unitários
-npm run test
-
-# Executar com saída detalhada
-npm run test -- --verbose
-
-# Executar um arquivo específico
-npm run test -- app.controller.spec.ts
-
-# Executar com cobertura
-npm run test:cov
-
-# Executar testes end-to-end
-npm run test:e2e
-```
-
----
-
-## Visão Geral da API
-
-| Prefixo | Descrição |
+| Diretório | Descrição |
 |---|---|
-| `/auth` | Cadastro, login e gerenciamento de tokens JWT |
-| `/users` | Perfil de usuário e gerenciamento de conta |
-| `/recommendations` | Recuperação e lógica de recomendação de produtos |
+| `components/` | Elementos de UI reutilizáveis (botões, cards, modais, etc.) |
+| `views/` | Componentes de página completa mapeados a rotas |
+| `router/` | Definição de rotas e guards de navegação |
+| `services/` | Camada de abstração para toda comunicação com a API do back-end |
+| `assets/` | Recursos estáticos como imagens, ícones e folhas de estilo globais |
