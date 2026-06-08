@@ -16,12 +16,17 @@
 
     <div class="dashboard-grid">
       <!-- Preferences Form Card -->
-      <section class="dashboard-card preferences-card animate-slide-up" style="animation-delay: 0.1s">
+      <section
+        class="dashboard-card preferences-card animate-slide-up"
+        style="animation-delay: 0.1s"
+      >
         <div class="card-header">
           <span class="card-icon">🎯</span>
           <div class="card-title-group">
             <h2>Preferências de Compra</h2>
-            <p>Selecione seus interesses para nos ajudar a personalizar sua experiência.</p>
+            <p>
+              Selecione seus interesses para nos ajudar a personalizar sua experiência.
+            </p>
           </div>
         </div>
 
@@ -60,9 +65,15 @@
 
           <!-- Preferred Payment Method -->
           <div class="form-section">
-            <label for="payment-method" class="section-label">Método de Pagamento Preferido</label>
+            <label for="payment-method" class="section-label"
+              >Método de Pagamento Preferido</label
+            >
             <div class="select-wrapper">
-              <select id="payment-method" v-model="preferredPayment" class="custom-select">
+              <select
+                id="payment-method"
+                v-model="preferredPayment"
+                class="custom-select"
+              >
                 <option value="" disabled>Selecione uma opção</option>
                 <option value="pix">⚡ Pix (Desconto de 5%)</option>
                 <option value="credit_card">💳 Cartão de Crédito</option>
@@ -81,7 +92,10 @@
         </div>
       </section>
 
-      <section class="dashboard-card recommendations-card animate-slide-up" style="animation-delay: 0.2s">
+      <section
+        class="dashboard-card recommendations-card animate-slide-up"
+        style="animation-delay: 0.2s"
+      >
         <div class="card-header">
           <span class="card-icon">✨</span>
           <div class="card-title-group">
@@ -91,7 +105,6 @@
         </div>
 
         <div class="card-body recommendations-body">
-          
           <div v-if="isLoadingRecommendations" class="skeletons-container">
             <div v-for="n in 3" :key="n" class="skeleton-card">
               <div class="skeleton-image-wrapper">
@@ -111,20 +124,29 @@
           <div v-else-if="recommendations.length === 0" class="coming-soon-banner">
             <div class="coming-soon-badge">Aviso</div>
             <h3>Nenhuma recomendação no momento</h3>
-            <p>Escolha e salve novas preferências de categorias acima para forçar o motor de recomendação a gerar ofertas para o seu perfil.</p>
+            <p>
+              Escolha e salve novas preferências de categorias acima para forçar o motor
+              de recomendação a gerar ofertas para o seu perfil.
+            </p>
           </div>
 
           <div v-else class="products-container">
-            <div v-for="prodId in recommendations" :key="prodId" class="product-item-card">
-              <div class="product-avatar-box">📦</div>
+            <div v-for="prod in recommendations" :key="prod.id" class="product-item-card">
+              <div class="product-avatar-box">🛍️</div>
               <div class="product-details">
-                <h4>Item Recomendado</h4>
-                <span class="product-id-tag">ID: {{ prodId }}</span>
+                <h4>{{ prod.name }}</h4>
+                <div class="product-meta-row">
+                  <span class="product-id-tag">ID: {{ prod.id.substring(0, 8) }}...</span>
+                  <span v-if="prod.price > 0" class="product-price-tag">
+                    R$ {{ prod.price.toFixed(2).replace(".", ",") }}
+                  </span>
+                </div>
               </div>
-              <button class="btn-view-product" @click="goToProduct(prodId)">Ver Oferta</button>
+              <button class="btn-view-product" @click="goToProduct(prod.id)">
+                Ver Oferta
+              </button>
             </div>
           </div>
-
         </div>
       </section>
     </div>
@@ -159,7 +181,7 @@ const availableCategories = [
   { id: "sports", name: "Esporte & Saúde", icon: "⚽" },
   { id: "home", name: "Casa & Design", icon: "🏠" },
   { id: "beauty", name: "Beleza & Cuidado", icon: "💄" },
-  { id: "games", name: "Games & Geek", icon: "🎮" }
+  { id: "games", name: "Games & Geek", icon: "🎮" },
 ];
 
 const toggleCategory = (catId) => {
@@ -174,7 +196,7 @@ const toggleCategory = (catId) => {
 // Nova função assíncrona para buscar as recomendações do back-end
 const fetchRecommendations = async () => {
   if (!userId.value) return;
-  
+
   isLoadingRecommendations.value = true;
   try {
     const data = await recommendationService.getMyRecommendations(userId.value);
@@ -193,15 +215,15 @@ const loadUserData = async () => {
       const userObj = JSON.parse(storedUser);
       userId.value = userObj.id || "";
       userName.value = userObj.name || "Cliente";
-      
+
       if (userObj.preferences && Array.isArray(userObj.preferences)) {
-        selectedCategories.value = userObj.preferences.filter(pref => 
-          availableCategories.some(cat => cat.id === pref)
+        selectedCategories.value = userObj.preferences.filter((pref) =>
+          availableCategories.some((cat) => cat.id === pref)
         );
-        
+
         receivePromoEmails.value = !userObj.preferences.includes("optout_newsletter");
-        
-        const paymentPref = userObj.preferences.find(p => p.startsWith("pay_"));
+
+        const paymentPref = userObj.preferences.find((p) => p.startsWith("pay_"));
         if (paymentPref) {
           preferredPayment.value = paymentPref.replace("pay_", "");
         }
@@ -209,7 +231,6 @@ const loadUserData = async () => {
 
       // IMPORTANTE: Busca as recomendações da IA logo após identificar o ID do usuário logado
       await fetchRecommendations();
-
     } catch (error) {
       console.error("Erro ao carregar dados do usuário:", error);
       isLoadingRecommendations.value = false;
@@ -223,23 +244,23 @@ const savePreferences = async () => {
   isSaving.value = true;
   try {
     const prefArray = [...selectedCategories.value];
-    
+
     if (!receivePromoEmails.value) {
       prefArray.push("optout_newsletter");
     }
-    
+
     if (preferredPayment.value) {
       prefArray.push(`pay_${preferredPayment.value}`);
     }
 
     const response = await userService.updateMe({
-      preferences: prefArray
+      preferences: prefArray,
     });
 
     if (response.user) {
       localStorage.setItem("user", JSON.stringify(response.user));
       toast.success("Suas preferências foram salvas com sucesso!");
-      
+
       // Atualiza as recomendações em tempo real após o usuário mudar os gostos
       await fetchRecommendations();
     } else {
@@ -247,7 +268,9 @@ const savePreferences = async () => {
     }
   } catch (error) {
     console.error("Erro ao salvar preferências:", error);
-    toast.error(error.response?.data?.message || "Não foi possível salvar as preferências.");
+    toast.error(
+      error.response?.data?.message || "Não foi possível salvar as preferências."
+    );
   } finally {
     isSaving.value = false;
   }
@@ -268,7 +291,7 @@ onMounted(() => {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1.5rem;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 /* Welcome Card */
@@ -325,7 +348,7 @@ onMounted(() => {
   justify-content: center;
   font-weight: 800;
   font-size: 2.25rem;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .welcome-text h1 {
@@ -508,7 +531,7 @@ onMounted(() => {
   right: 0;
   bottom: 0;
   background-color: var(--color-border-hover);
-  transition: .3s;
+  transition: 0.3s;
   border-radius: 24px;
 }
 
@@ -520,7 +543,7 @@ onMounted(() => {
   left: 3px;
   bottom: 3px;
   background-color: white;
-  transition: .3s;
+  transition: 0.3s;
   border-radius: 50%;
 }
 
@@ -769,13 +792,16 @@ input:checked + .slider:before {
   0% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Entry Animations */
@@ -788,8 +814,13 @@ input:checked + .slider:before {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
@@ -797,6 +828,7 @@ input:checked + .slider:before {
     opacity: 0;
     transform: translateY(24px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

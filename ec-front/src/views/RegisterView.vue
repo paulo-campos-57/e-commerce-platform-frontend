@@ -51,14 +51,20 @@
       </div>
       <div class="form-group">
         <label for="state">Estado</label>
-        <input
-          v-model="formData.state"
-          type="text"
-          id="state"
-          name="state"
-          placeholder="Digite seu estado"
-          required
-        />
+        <div class="select-wrapper">
+          <select
+            v-model="formData.state"
+            id="state"
+            name="state"
+            class="custom-select"
+            required
+          >
+            <option value="" disabled>Selecione seu estado</option>
+            <option v-for="uf in BrazilianStates" :key="uf.sigla" :value="uf.sigla">
+              {{ uf.nome }} ({{ uf.sigla }})
+            </option>
+          </select>
+        </div>
       </div>
 
       <div class="form-group checkbox-group">
@@ -74,22 +80,27 @@
       </div>
 
       <div class="form-group" :class="{ 'disabled-field': formData.isAdmin }">
-        <label for="preferences">Preferências de Compra</label>
-        <select
-          v-model="formData.preferences"
-          id="preferences"
-          multiple
-          :disabled="formData.isAdmin"
-          class="select-multiple"
-        >
-          <option value="tecnologia">Tecnologia</option>
-          <option value="moda">Moda</option>
-          <option value="casa">Casa & Decoração</option>
-          <option value="games">Games</option>
-        </select>
-        <small class="help-text" v-if="!formData.isAdmin">
-          Segure Ctrl (ou Cmd) para selecionar mais de uma opção.
-        </small>
+        <label>Preferências de Compra</label>
+        <p class="sub-label-text" v-if="!formData.isAdmin">
+          Selecione as categorias que você mais gosta:
+        </p>
+
+        <div v-if="!formData.isAdmin" class="categories-tag-grid">
+          <button
+            v-for="cat in olistCategories"
+            :key="cat.dbValue"
+            type="button"
+            :class="[
+              'category-register-tag',
+              { active: formData.preferences.includes(cat.dbValue) },
+            ]"
+            @click="toggleCategory(cat.dbValue)"
+          >
+            <span class="cat-icon">{{ cat.icon }}</span>
+            <span class="cat-name">{{ cat.label }}</span>
+          </button>
+        </div>
+
         <small class="help-text error" v-else>
           Administradores não possuem preferências de perfil.
         </small>
@@ -113,11 +124,55 @@ const router = useRouter();
 const toast = useToast();
 const isLoading = ref(false);
 
+const olistCategories = [
+  { dbValue: "bed_bath_table", label: "Cama, Mesa & Banho", icon: "🛏️" },
+  { dbValue: "health_beauty", label: "Saúde & Beleza", icon: "💄" },
+  { dbValue: "sports_leisure", label: "Esporte & Lazer", icon: "⚽" },
+  { dbValue: "furniture_decor", label: "Móveis & Decoração", icon: "🏠" },
+  { dbValue: "computers_accessories", label: "Informática & Acessórios", icon: "💻" },
+  { dbValue: "housewares", label: "Utilidades Domésticas", icon: "🍳" },
+  { dbValue: "watches_gifts", label: "Relógios & Presentes", icon: "⌚" },
+  { dbValue: "telephony", label: "Telefonia", icon: "📱" },
+  { dbValue: "garden_tools", label: "Ferramentas & Jardim", icon: "🏡" },
+  { dbValue: "auto", label: "Automotivo", icon: "🚗" },
+];
+
+const BrazilianStates = [
+  { sigla: "AC", nome: "Acre" },
+  { sigla: "AL", nome: "Alagoas" },
+  { sigla: "AP", nome: "Amapá" },
+  { sigla: "AM", nome: "Amazonas" },
+  { sigla: "BA", nome: "Bahia" },
+  { sigla: "CE", nome: "Ceará" },
+  { sigla: "DF", nome: "Distrito Federal" },
+  { sigla: "ES", nome: "Espírito Santo" },
+  { sigla: "GO", nome: "Goiás" },
+  { sigla: "MA", nome: "Maranhão" },
+  { sigla: "MT", nome: "Mato Grosso" },
+  { sigla: "MS", nome: "Mato Grosso do Sul" },
+  { sigla: "MG", nome: "Minas Gerais" },
+  { sigla: "PA", nome: "Pará" },
+  { sigla: "PB", nome: "Paraíba" },
+  { sigla: "PR", nome: "Paraná" },
+  { sigla: "PE", nome: "Pernambuco" },
+  { sigla: "PI", nome: "Piauí" },
+  { sigla: "RJ", nome: "Rio de Janeiro" },
+  { sigla: "RN", nome: "Rio Grande do Norte" },
+  { sigla: "RS", nome: "Rio Grande do Sul" },
+  { sigla: "RO", nome: "Rondônia" },
+  { sigla: "RR", nome: "Roraima" },
+  { sigla: "SC", nome: "Santa Catarina" },
+  { sigla: "SP", nome: "São Paulo" },
+  { sigla: "SE", nome: "Sergipe" },
+  { sigla: "TO", nome: "Tocantins" },
+];
+
 const formData = reactive({
   name: "",
   email: "",
   password: "",
   confirmPassword: "",
+  state: "",
   isAdmin: false,
   preferences: [],
 });
@@ -125,6 +180,15 @@ const formData = reactive({
 const handleAdminChange = () => {
   if (formData.isAdmin) {
     formData.preferences = [];
+  }
+};
+
+const toggleCategory = (dbValue) => {
+  const index = formData.preferences.indexOf(dbValue);
+  if (index === -1) {
+    formData.preferences.push(dbValue);
+  } else {
+    formData.preferences.splice(index, 1);
   }
 };
 
@@ -140,7 +204,7 @@ const handleRegister = async () => {
     name: formData.name,
     email: formData.email,
     password: formData.password,
-    state: formData.state,
+    state: formData.state.toUpperCase().trim(),
   };
 
   if (formData.isAdmin) {
@@ -152,12 +216,10 @@ const handleRegister = async () => {
 
   try {
     const data = await userService.register(payload);
-
     toast.success(data.message || "Registro efetuado com sucesso!");
     router.push("/login");
   } catch (error) {
     console.error("Erro no cadastro:", error);
-
     const apiMessage = error.response?.data?.message;
 
     if (Array.isArray(apiMessage)) {
